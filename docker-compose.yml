@@ -94,7 +94,7 @@ services:
     image: minio/minio:latest
     container_name: minio
     environment:
-      MINIO_ROOT_USER: "capellax"
+      MINIO_ROOT_USER: "zhanserik"
       MINIO_ROOT_PASSWORD: "12345678"
     ports:
       - "9001:9001" # MinIO Web UI and API

@@ -6,7 +6,7 @@ spring:
     name: document-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5434/document_db
+    url: jdbc:postgresql://localhost:5435/document_db
     username: document_db
     password: document_db
     driver-class-name: org.postgresql.Driver
@@ -32,8 +32,8 @@ spring:
           
 
 minio:
-  endpoint: http://localhost:9000
-  access-key: capellax
+  endpoint: http://localhost:9001
+  access-key: zhanserik
   secret-key: 12345678
   bucket-name: documents
 
