@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MicroBank Control Panel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">MicroBank</p>
+      <h1>Фронтенд для микросервисного банка</h1>
+      <p>Проверяйте регистрационные сценарии, авторизацию и межсервисные запросы через API Gateway.</p>
+      <div class="hero__actions">
+        <div class="url-wrapper">
+          <label for="base-url-input">API Gateway URL</label>
+          <input id="base-url-input" value="http://localhost:8123" />
+        </div>
+        <div class="hero__buttons">
+          <button data-section="interact">Интерактив</button>
+          <button data-section="services">Сервисы</button>
+          <button data-section="security">Безопасность</button>
+          <button data-section="deployment">Развёртывание</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero__panel">
+      <p class="hero__panel-title">Что можно сделать</p>
+      <ul>
+        <li>Создать пользователя и активировать его через RabbitMQ.</li>
+        <li>Выполнить логин и получить JWT через Keycloak.</li>
+        <li>Запросить профиль, счета, транзакции и документы.</li>
+        <li>Проверить JWT-авторизацию и маршрутизацию в API Gateway.</li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="interact">
+      <div class="section__heading">
+        <h2>Интерактивный контроль</h2>
+        <p>Все формы отправляют запросы через API Gateway (CORS должен быть разрешён в среде). Лог выводится справа.</p>
+      </div>
+      <div class="panel-grid">
+        <article class="panel-card">
+          <h3>Авторизация</h3>
+          <p class="panel-card__subtitle">Регистрация, логин, refresh и просмотр профиля.</p>
+          <form id="register-form" class="form">
+            <p class="form__title">Регистрация</p>
+            <div class="input-row">
+              <input name="username" required placeholder="Логин" />
+              <input name="email" type="email" required placeholder="Email" />
+            </div>
+            <div class="input-row">
+              <input name="firstName" required placeholder="Имя" />
+              <input name="lastName" required placeholder="Фамилия" />
+            </div>
+            <input name="password" type="password" minlength="6" required placeholder="Пароль" />
+            <button type="submit">Отправить</button>
+            <p class="form-status" id="register-status"></p>
+          </form>
+
+          <form id="login-form" class="form">
+            <p class="form__title">Логин</p>
+            <div class="input-row">
+              <input name="username" required placeholder="Логин" />
+              <input name="password" type="password" required placeholder="Пароль" />
+            </div>
+            <button type="submit">Войти</button>
+            <p class="form-status" id="login-status"></p>
+          </form>
+
+          <form id="refresh-form" class="form">
+            <p class="form__title">Refresh token</p>
+            <input id="refresh-token-input" name="refreshToken" placeholder="refresh token" />
+            <button type="submit">Обновить токен</button>
+            <p class="form-status" id="refresh-status"></p>
+          </form>
+
+          <div class="token-summary">
+            <p>Access token: <span id="access-token" class="token-value">-</span></p>
+            <p>Refresh token: <span id="refresh-token" class="token-value">-</span></p>
+          </div>
+
+          <div class="panel-actions">
+            <button id="current-user-btn" class="ghost">Профиль текущего пользователя</button>
+            <button id="accounts-btn" class="ghost">Список счетов</button>
+            <button id="transactions-btn" class="ghost">Последние транзакции</button>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <h3>Произвольный запрос</h3>
+          <p class="panel-card__subtitle">Выберите метод, путь и тело. Тело должно быть JSON.</p>
+          <form id="custom-request-form" class="form">
+            <div class="input-row">
+              <select name="method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>PATCH</option>
+                <option>DELETE</option>
+              </select>
+              <input name="endpoint" required placeholder="/api/v1/accounts" />
+            </div>
+            <textarea name="body" placeholder='{"field": "value"}'></textarea>
+            <button type="submit">Отправить</button>
+            <p class="form-status" id="custom-status"></p>
+          </form>
+          <div class="response-log">
+            <p class="form__title">Ответ и лог</p>
+            <pre id="response-log">Нажмите кнопку, чтобы увидеть результат.</pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="section__heading">
+        <h2>Сервисы</h2>
+        <p>Каждый модуль покрывает отдельную бизнес-функцию.</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>Discovery</h3>
+          <p>Регистрирует сервисы в Eureka и поддерживает карьеру микросервисов.</p>
+        </article>
+        <article class="card">
+          <h3>API Gateway</h3>
+          <p>Маршрутизация, проверка JWT на границе и одно входное окно в систему.</p>
+        </article>
+        <article class="card">
+          <h3>Auth Service</h3>
+          <p>Активирует пользователей через Keycloak, сохраняет метаданные в PostgreSQL и Redis.</p>
+        </article>
+        <article class="card">
+          <h3>Account Service</h3>
+          <p>Управляет счетами пользователей и балансами.</p>
+        </article>
+        <article class="card">
+          <h3>Transaction Service</h3>
+          <p>Переводы между счетами с проверкой наличия средств.</p>
+        </article>
+        <article class="card">
+          <h3>Document Service</h3>
+          <p>Генерирует документы и хранит их в MinIO.</p>
+        </article>
+        <article class="card">
+          <h3>Notification Service</h3>
+          <p>Отправляет email и уведомления через RabbitMQ.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="security">
+      <div class="section__heading">
+        <h2>Безопасность</h2>
+        <p>Keycloak + JWT + Spring Security.</p>
+      </div>
+      <div class="security-grid">
+        <article class="card security-card">
+          <h3>OAuth2 / OpenID</h3>
+          <p>Keycloak хранит роли `USER` и `ADMIN` и предоставляет JWT.</p>
+        </article>
+        <article class="card security-card">
+          <h3>JWT-ресурсный сервер</h3>
+          <p>Gateway и Auth проверяют `issuer-uri`/`jwk-set-uri`, настраивают `ROLE_*`.</p>
+        </article>
+        <article class="card security-card">
+          <h3>Открытые маршруты</h3>
+          <p>Регистрация, активация, логин и восстановление доступны без токена; остальные маршруты охраняются.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="deployment">
+      <div class="section__heading">
+        <h2>Развёртывание</h2>
+        <p>Docker Compose управляет инфраструктурой.</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>Docker Compose</h3>
+          <p>Заливка PostgreSQL, Redis, MinIO, Keycloak, Eureka, RabbitMQ и микросервисов.</p>
+        </article>
+        <article class="card">
+          <h3>Postman</h3>
+          <p>Готовая коллекция проверяет регистрацию, операции по счетам и документы.</p>
+        </article>
+        <article class="card">
+          <h3>Секвенция запуска</h3>
+          <p>Инфраструктура → Discovery → Сервисы → API Gateway.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>MicroBank · микросервисная демонстрация · сервисы, безопасность и коммуникации.</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

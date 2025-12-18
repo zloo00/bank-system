@@ -4,6 +4,8 @@ import com.microbank.document.exception.CustomException;
 import com.microbank.document.service.MinIOService;
 import io.minio.*;
 import io.minio.http.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.io.InputStream;
 
 @Service
 public class MinIOServiceImpl implements MinIOService {
+
+    private static final Logger log = LoggerFactory.getLogger(MinIOServiceImpl.class);
 
     private final MinioClient minioClient;
 
@@ -47,12 +51,12 @@ public class MinIOServiceImpl implements MinIOService {
                     GetPresignedObjectUrlArgs.builder()
                             .bucket(bucketName)
                             .object(fileName)
-//                            .expiry(60 * 60 * 24) // 24 hours
                             .method(Method.GET)
                             .build()
             );
         } catch (Exception e) {
-            throw new CustomException("Error while uploading file to MinIO");
+            log.error("Failed to upload {} to MinIO bucket {}", fileName, bucketName, e);
+            throw new CustomException("Error while uploading file to MinIO", e);
         }
     }
 }
