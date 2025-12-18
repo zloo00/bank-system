@@ -86,7 +86,7 @@ services:
       POSTGRES_USER: document_db
       POSTGRES_PASSWORD: document_db
     ports:
-      - "5434:5432"
+      - "5435:5432"
     networks:
       - microbank-network
 
@@ -97,7 +97,7 @@ services:
       MINIO_ROOT_USER: "capellax"
       MINIO_ROOT_PASSWORD: "12345678"
     ports:
-      - "9000:9000" # MinIO Web UI and API
+      - "9001:9001" # MinIO Web UI and API
     command: server /data --console-address ":9001"
     volumes:
       - minio-data:/data
