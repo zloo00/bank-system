@@ -1,0 +1,108 @@
+networks:
+  microbank-network:
+    driver: bridge
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_IMPORT: /opt/keycloak/data/import/realm-export.json
+    volumes:
+      - ./keycloak-config:/opt/keycloak/data/import
+    ports:
+      - "9098:8080"
+    command: [ "start-dev", "--import-realm" ]
+    networks:
+      - microbank-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-container
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672"   # AMQP Port
+
+  maildev:
+    image: maildev/maildev
+    container_name: maildev-container
+    ports:
+      - "1025:1025" # SMTP Port
+      - "1080:1080" # Web UI Port
+    networks:
+      - microbank-network
+
+  redis:
+    image: redis:7
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    networks:
+      - microbank-network
+
+  postgres-auth-service:
+    image: postgres:17-alpine
+    container_name: auth-db-container
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_db
+      POSTGRES_PASSWORD: auth_db
+    ports:
+      - "5431:5432"
+    networks:
+      - microbank-network
+
+  postgres-account-service:
+    image: postgres:17-alpine
+    container_name: account-db-container
+    environment:
+      POSTGRES_DB: account_db
+      POSTGRES_USER: account_db
+      POSTGRES_PASSWORD: account_db
+    ports:
+      - "5430:5432"
+    networks:
+      - microbank-network
+
+  postgres-transaction-service:
+    image: postgres:17-alpine
+    container_name: transaction-db-container
+    environment:
+      POSTGRES_DB: transaction_db
+      POSTGRES_USER: transaction_db
+      POSTGRES_PASSWORD: transaction_db
+    ports:
+      - "5434:5432"
+    networks:
+      - microbank-network
+
+  postgres-document-service:
+    image: postgres:17-alpine
+    container_name: document-db-container
+    environment:
+      POSTGRES_DB: document_db
+      POSTGRES_USER: document_db
+      POSTGRES_PASSWORD: document_db
+    ports:
+      - "5434:5432"
+    networks:
+      - microbank-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: "capellax"
+      MINIO_ROOT_PASSWORD: "12345678"
+    ports:
+      - "9000:9000" # MinIO Web UI and API
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - microbank-network
+
+volumes:
+  minio-data:

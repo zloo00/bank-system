@@ -1,0 +1,63 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5431/auth_db
+    username: auth_db
+    password: auth_db
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+    database: postgresql
+
+  sql:
+    init:
+      mode: always
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9098/realms/microbank
+          jwk-set-uri: http://localhost:9098/realms/microbank/protocol/openid-connect/certs
+
+  cloud:
+    discovery:
+      enabled: true
+
+keycloak:
+  login:
+    token-url: "http://localhost:9098/realms/microbank/protocol/openid-connect/token"
+    grant-type: "password"
+    client-id: "microbank-client"
+    client-secret: "oVncCcoVMZCFRbiGA99ygvEcsclLcxW8"
+  refresh-token:
+    grant-type: "refresh_token"
+  config:
+    server-url: "http://localhost:9098"
+    realm: "master"
+    username: "admin"
+    password: "admin"
+    client-id: "admin-cli"
+    client-secret: "0E3qKQwVTqbepjzCiVe3VfG41AqNEtNu"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
